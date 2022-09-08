@@ -62,6 +62,8 @@ const GlobalStyle = createGlobalStyle`
  }
  a {
    text-decoration:none;
+   // inherit를 사용해서 부모의 컬러 색을 가져온다.
+   color: inherit;
  }
  `;
 function App() {
