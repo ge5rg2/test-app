@@ -37,9 +37,10 @@ const Container = styled.div`
   margin: 0 auto;
 
   ${Header} {
-    height: 10vh;
+    height: 8vh;
+    margin-top: 20px;
     display: flex;
-    align-items: center;
+    justify-content: center;
     ${Title} {
       color: ${(props) => props.theme.accentColor};
       font-size: 40px;
@@ -52,12 +53,17 @@ const Container = styled.div`
       color: ${(props) => props.theme.bgColor};
       border-radius: 15px;
       margin-bottom: 10px;
+      img {
+        width: 35px;
+        height: 35px;
+        margin-right: 10px;
+      }
       a {
         padding: 20px;
-
         transition: color 0.2s ease-in-out;
         // 글자 범위 밖에서도 클릭 가능하도록
-        display: block;
+        display: flex;
+        align-items: center;
       }
       &:hover {
         // Link가 결국 anchor로 반환되기 때문에 a로 지정한다.
@@ -108,7 +114,23 @@ function Coins() {
           {coins.map((coin) => (
             // &rarr 는 -> 이다.
             <Coin key={coin.id}>
-              <Link to={`/${coin.id}`}>{coin.name} &rarr;</Link>
+              <Link
+                // 아래 코드와 같이 to에 state에 정보를 넘겨서 전달할 수 있다.
+                /**
+                 * 리액트 라우터 6부터는
+                 * Link to={`/${coin.id}`} state={coin.name} 로 따로 적으시면 됩니다!
+                 * 버전이 바뀌면서 state가 to로부터 분리되었네요
+                 */
+                to={{
+                  pathname: `/${coin.id}`,
+                  state: { name: coin.name },
+                }}
+              >
+                <img
+                  src={`https://coinicons-api.vercel.app/api/icon/${coin.symbol.toLowerCase()}`}
+                />
+                {coin.name} &rarr;
+              </Link>
             </Coin>
           ))}
         </CoinList>
