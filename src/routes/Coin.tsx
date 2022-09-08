@@ -58,6 +58,22 @@ function Coin() {
   // useLocation으로 Link to로 보낸 정보들을 확인할 수 있다.
   const { state } = useLocation<RouteState>();
   const [loading, setLoading] = useState(true);
+  const [info, setInfo] = useState({});
+  const [priceInfo, setPriceInfo] = useState({});
+  useEffect(() => {
+    (async () => {
+      // 아래 코드는 두줄짜리를 한줄로 캡슐화
+      const infoData = await (
+        await fetch(`https://api.coinpaprika.com/v1/coins/${coinId}`)
+      ).json();
+      const priceData = await (
+        await fetch(`https://api.coinpaprika.com/v1/tickers/${coinId}`)
+      ).json();
+      setInfo(infoData);
+      setPriceInfo(priceData);
+    })();
+  }, []);
+
   return (
     <Container>
       <Header>
