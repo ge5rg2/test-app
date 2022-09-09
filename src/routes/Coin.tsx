@@ -1,7 +1,33 @@
-import { useLocation, useParams } from "react-router-dom";
+import { Route, Switch, useLocation, useParams } from "react-router-dom";
 import styled from "styled-components";
 import Spinner from "../assets/Spinner.gif";
 import { useEffect, useState } from "react";
+import Price from "./Price";
+import Chart from "./Chart";
+
+const Overview = styled.div`
+  display: flex;
+  justify-content: space-between;
+  background-color: rgba(0, 0, 0, 0.5);
+  padding: 10px 20px;
+  margin-bottom: 10px;
+  border-radius: 10px;
+`;
+const OverviewItem = styled.div`
+  width: 30%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  span:first-child {
+    font-size: 10px;
+    font-weight: 400;
+    text-transform: uppercase;
+    margin-bottom: 5px;
+  }
+`;
+const Description = styled.p`
+  margin: 20px 0px;
+`;
 
 const Background = styled.div`
   position: absolute;
@@ -86,24 +112,12 @@ interface PriceData {
   first_data_at: string;
   last_updated: string;
   quotes: {
-    USD: {
-      ath_date: string;
-      ath_price: number;
-      market_cap: number;
-      market_cap_change_24h: number;
-      percent_change_1h: number;
-      percent_change_1y: number;
-      percent_change_6h: number;
-      percent_change_7d: number;
-      percent_change_12h: number;
-      percent_change_15m: number;
-      percent_change_24h: number;
-      percent_change_30d: number;
-      percent_change_30m: number;
-      percent_from_price_ath: number;
+    KRW: {
       price: number;
+      market_cap: number;
       volume_24h: number;
-      volume_24h_change_24h: number;
+      percent_change_24h: number;
+      percent_change_7d: number;
     };
   };
 }
@@ -121,29 +135,94 @@ function Coin() {
       const infoData = await (
         await fetch(`https://api.coinpaprika.com/v1/coins/${coinId}`)
       ).json();
-      const priceData = await (
-        await fetch(`https://api.coinpaprika.com/v1/tickers/${coinId}`)
+      // quotes=KRW옵션을 적용해서 한국 화폐단위로 출력시켰다.
+      const preData = await (
+        await fetch(`https://api.coinpaprika.com/v1/tickers?quotes=KRW`)
       ).json();
+      const priceData = await preData
+        .slice(0, 100)
+        .filter((el: any) => el.id == coinId)[0];
       setInfo(infoData);
       setPriceInfo(priceData);
       setLoading(false);
     })();
-  }, []);
-
+  }, [coinId]);
+  // Need to : state가 아닌 접근일 경우 차단해야함
   return (
     <Container>
       <Header>
-        <Title>{state?.name}</Title>
+        <Title>
+          {state?.name ? state.name : loading ? "Loading..." : info?.name}
+        </Title>
       </Header>
       {loading ? (
         <Background>
-          <LoadingText>Loading to {state?.name || "none"}</LoadingText>
+          <LoadingText>Loading to {state?.name}</LoadingText>
           <img src={Spinner} />
         </Background>
       ) : (
-        <h1>
-          {info?.name} / {priceInfo?.quotes.USD.ath_price}
-        </h1>
+        <>
+          <Overview>
+            <OverviewItem>
+              <span>Rank:</span>
+              <span>{info?.rank}</span>
+            </OverviewItem>
+            <OverviewItem>
+              <span>Symbol:</span>
+              <span>${info?.symbol}</span>
+            </OverviewItem>
+            <OverviewItem>
+              <span>Open Source:</span>
+              <span>{info?.open_source ? "Yes" : "No"}</span>
+            </OverviewItem>
+          </Overview>
+          <Overview>
+            <OverviewItem>
+              <span>Price(KRW):</span>
+              <span style={{ color: "#4cd137" }}>
+                {Number(
+                  priceInfo?.quotes.KRW.price.toFixed(1)
+                ).toLocaleString()}
+                ₩
+              </span>
+            </OverviewItem>
+            <OverviewItem>
+              <span>24H CHANGE:</span>
+              {Number(priceInfo?.quotes.KRW.percent_change_24h.toFixed(2)) <
+              0 ? (
+                <span style={{ color: "#00a8ff" }}>
+                  {priceInfo?.quotes.KRW.percent_change_24h.toFixed(2)}%
+                </span>
+              ) : (
+                <span style={{ color: "#e84118" }}>
+                  +{priceInfo?.quotes.KRW.percent_change_24h.toFixed(2)}%
+                </span>
+              )}
+            </OverviewItem>
+            <OverviewItem>
+              <span>7D CHANGE:</span>
+              {Number(priceInfo?.quotes.KRW.percent_change_7d.toFixed(2)) <
+              0 ? (
+                <span style={{ color: "#00a8ff" }}>
+                  {priceInfo?.quotes.KRW.percent_change_7d.toFixed(2)}%
+                </span>
+              ) : (
+                <span style={{ color: "#e84118" }}>
+                  +{priceInfo?.quotes.KRW.percent_change_7d.toFixed(2)}%
+                </span>
+              )}
+            </OverviewItem>
+          </Overview>
+          <Description>{info?.description || "No description"}</Description>
+          <Switch>
+            <Route path={`/${coinId}/price`}>
+              <Price />
+            </Route>
+            <Route path={`/${coinId}/chart`}>
+              <Chart />
+            </Route>
+          </Switch>
+        </>
       )}
     </Container>
   );
