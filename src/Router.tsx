@@ -1,16 +1,26 @@
 import { BrowserRouter, Route, Switch } from "react-router-dom";
-import Coin from "./routes/Coin";
-import Coins from "./routes/Coins";
+import Main from "./routes/Main";
+import Navigation from "./Navigation";
+import Signup from "./routes/Signup";
+import Login from "./routes/Login";
+import Mypage from "./routes/Mypage";
 
 function Router() {
   return (
     <BrowserRouter>
+      <Navigation />
       <Switch>
-        <Route path="/:coinId">
-          <Coin />
+        <Route path="/mypage/order">
+          <Mypage />
+        </Route>
+        <Route path="/login">
+          <Login />
+        </Route>
+        <Route path="/sign-up">
+          <Signup />
         </Route>
         <Route path="/">
-          <Coins />
+          <Main />
         </Route>
       </Switch>
     </BrowserRouter>

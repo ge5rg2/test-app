@@ -1,46 +1,205 @@
-# Getting Started with Create React App
+# — 사전 과제 소개
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+---
 
-## Available Scripts
+팀 OOO에서 신규 서비스를 런칭 한다. 고객이 사진을 올리면, 사진을 만화의 한 장면처럼 바꿔서 보여주는 서비스이다.
+회의 결과, 신규 서비스는 정식 출시 전, 가벼운 테스트를 위해 간단한 기능과 페이지가 필요하다고 도출 되었다.
+이제 당신은 신규 서비스의 웹 프론트엔드를 개발하게 되었고 요구 사항은 다음과 같다.
 
-In the project directory, you can run:
+1. 헤더(메뉴)
+2. 서비스
+3. 회원가입
+4. 로그인
+5. 마이 페이지
+6. 마이 페이지 (상세)
 
-### `npm start`
+# — 구현
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+---
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+1. CSS 는 기본 속성 만을 사용하여서 작성합니다. (색깔 및 디자인에 신경 쓰지 않습니다.)
+2. 레이아웃은 요구하는 것을 읽은 뒤 적절히 배치합니다.
+3. 별도의 요구사항이 없는 것은 지원자가 판단하여 개발합니다.
+4. 구현 시 요구하는 로고/이미지는 지원자가 아무 이미지나 삽입하면 됩니다.
+5. 본문에서 말하는 로그인 된 경우란, 전역 상태의 토큰 값을 가진 경우를 말합니다.
 
-### `npm test`
+## 1. 헤더(메뉴)
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+### PC
 
-### `npm run build`
+- [ ] 헤더 좌측에는 서비스 로고, 헤더 우측에는 메뉴 네비게이션이 존재한다.
+- [ ] 메뉴 네비게이션에는 좌측부터 순서대로 3가지 메뉴가 존재한다.
+- [ ] 메뉴는 클릭(선택) 된 경우 색이 변경된다.
+- [ ] 메뉴는 클릭 시, 해당 페이지로 이동 된다.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+1. 서비스
+   - URL : /
+2. 회원가입 or 마이페이지
+   - 로그인 안된 경우 : 회원가입
+     - URL : /sign-up
+   - 로그인 된 경우 : 마이페이지
+     - URL : /mypage/order
+3. 로그인 or 로그아웃
+   - 로그인 안된 경우 : 로그인
+     - URL : /login
+   - 로그인 된 경우 : 로그아웃
+     - URL : /logout
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+## 2. 서비스
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+- [ ] 프로젝트 실행 시 최초로 로딩 되는 페이지이다.
+  - URL : /
+- [ ] 서비스 상단에 이미지가 있다.
+- [ ] 이미지 하단에 주문 하기 버튼이 있다.
+- [ ] 로그인을 하지 않은 사용자의 경우(토큰 없음) 주문 하기 버튼을 클릭 시, 로그인을 하라는 Alert이 발생한다. 그리고 /sign-up 페이지로 이동 된다.
+- [ ] 로그인을 한 사용자의 경우(토큰 있음) 신청하기 버튼을 클릭 시, 주문 성공 Alert이 발생한다.
 
-### `npm run eject`
+## 3. 회원가입
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+- [ ] 회원가입 할 때에 사용 되는 페이지 이다.
+  - URL : /sign-up
+- [ ] 회원가입 시 다음과 같은 값을 Input 으로 수집한다.
+  - 이메일, 비밀번호, 비밀번호 확인, 연락처
+  - 각 항목은 위에서 아래로 배치 된다.
+- [ ] 하단에 가입하기 버튼을 넣는다.
+  - 가입하기 백엔드 API : POST /sign-up
+  - 가입하기 API 요청 Body 예시 >
+    ```json
+    {
+      "email": "test@test.test",
+      "password": "testtest",
+      "mobile": "01000000000"
+    }
+    ```
+    - 요청 Body에는 어떤 값을 넣어도 상관업다. (Valid check 없음)
+  - 가입하기 API 응답 Body 예시 >
+    ```json
+    {
+      "token": "123456789"
+    }
+    ```
+  - 가입 후 받아온 토큰 값은 전역 값으로 관리해야 한다.
+  - 전역 상태 라이브러리는 지원자가 제일 자신있는 것을 사용한다. (Context, Redux 등)
+- [ ] 사용자가 이메일을 입력 시, 올바른 이메일 형식인지 유효성 검증을 해야 한다.
+  - 유효하지 않은 경우, focus 가 넘어 갈 때에 Input 테두리가 빨간색으로 변한다.
+  - 유효하지 않은 경우, 가입하기 버튼 클릭 시, 이메일 확인 Alert이 발생한다. **그 후 이메일 필드로 cursor가 이동된다.**
+- [ ] 비밀번호는 8~15자를 입력해야 한다.
+  - 유효하지 않은 경우, 사용자가 입력할 때, Input 테두리가 빨간색으로 변한다.
+  - 유효하지 않은 경우, 가입하기 버튼 클릭 시 비밀번호 확인 Alert이 발생한다.
+- [ ] 비밀번호 확인은 비밀번호와 일치하는지 확인해야 한다.
+  - 일치하지 않은 경우, 가입하기 버튼 클릭 시 비밀번호 불일치 Alert이 발생한다.
+- [ ] 회원가입 성공 시, 서비스 페이지로 이동 된다.
+  - URL : /
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+## 4. 로그인
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+- [ ] 로그인 할 때에 사용 되는 페이지 이다.
+  - URL : /login
+- [ ] 로그인 시, 아래와 같은 값을 입력한다.
+  - 이메일, 비밀번호
+  - 각 항목은 위에서 아래로 배치 된다.
+- [ ] 하단에 로그인 버튼을 넣는다.
+  - 로그인 백엔드 API : POST /login
+  - 로그인 API 요청 Body 예시 >
+    ```json
+    {
+      "email": "test@test.test",
+      "password": "testtest"
+    }
+    ```
+  - 로그인 API 응답 Body 예시 >
+    ```json
+    {
+      "token": "123456789"
+    }
+    ```
+- [ ] 로그인 성공 시, 서비스 페이지로 이동된다.
+  - URL : /
+- [ ] 로그인 실패 시, 비밀번호를 확인해 달라는 Alert이 발생 한다.
+  - 비밀번호를 8글자 미만으로 하여 백엔드 API 호출 시, 401 Unauthorized 실패 응답 코드를 받는다.
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+## 5. 마이 페이지
 
-## Learn More
+- [ ] 주문 목록을 볼 때에 사용되는 페이지이다.
+  - URL : /mypage/order
+- [ ] 해당 페이지에 진입하면, 주문 목록을 불러와야 한다.
+  - 주문 목록 불러오기 백엔드 API : GET /order
+    - 해당 API는 백엔드에서 의도적으로 1초 sleep 후 보내준다.
+  - 주문 목록 불러오기 API 파라미터(Query String) 예시 >
+    ```json
+    /order?page=0
+    ```
+  - 주문 목록 불러오기 API 응답 Body 예시 >
+    ```json
+    {
+      "totalPages": 3,
+      "currentPage": 0,
+      "content": [
+        {
+          "id": 1,
+          "itemName": "아이템1"
+        },
+        {
+          "id": 2,
+          "itemName": "아이템2"
+        },
+        {
+          "id": 3,
+          "itemName": "아이템3"
+        },
+        {
+          "id": 4,
+          "itemName": "아이템4"
+        },
+        {
+          "id": 5,
+          "itemName": "아이템5"
+        },
+        {
+          "id": 6,
+          "itemName": "아이템6"
+        },
+        {
+          "id": 7,
+          "itemName": "아이템7"
+        },
+        {
+          "id": 8,
+          "itemName": "아이템8"
+        },
+        {
+          "id": 9,
+          "itemName": "아이템9"
+        },
+        {
+          "id": 10,
+          "itemName": "아이템10"
+        }
+      ]
+    }
+    ```
+    - totalPages : 총 페이지의 개수
+    - currentPage : 현재 페이지(0부터 시작)
+    - 기본적으로 가져오는 아이템은 10개 이다.
+- [ ] 주문 목록은 주문 아이템을 컴포넌트로 가지며, 주문 아이템은 각각 좌측에 ID, 우측에 아이템 itemName을 배치한다.
+- [ ] 주문 목록은 페이징 기능이 구현되어야 한다.
+  - 기본적으로 10개씩 노출시키며 페이징한다.
+  - 페이지 번호가 1인 경우, 백엔드 API 는 /order?page=0 을 호출한다.
+- [ ] 각 주문 아이템을 클릭 시, 상세 주문 페이지로 이동 된다.
+  - URL : /mypage/order/{id}
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+## 6. 마이 페이지 상세
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+- [ ] 주문 아이템 상세 내용을 보기 위한 페이지이다.
+  - URL : /mypage/order/{id}
+  - 주문 목록 불러오기 백엔드 API 에서 획득한 id 값을 URL에 입력 시에, 해당 주문에 대한 상세 내용을 볼 수 있다.
+- [ ] 주문 상세 내용 페이지에 진입하면, 주문 상세 내용을 가져온다.
+  - 주문 상세 내용 보기 백엔드 API : GET /order/{id}
+  - 주문 상세 내용 보기 백엔드 API 응답 Body 예시 >
+    ```json
+    {
+      "id": 1,
+      "itemName": "아이템1"
+    }
+    ```
+- [ ] 주문 상세 내용은 좌측에 id, 우측에 itemName을 배치한다.

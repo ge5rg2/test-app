@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 // 같은 src 폴더에 있어야 사진등이 정상작동함
 import Spinner from "../assets/Spinner.gif";
+import Button from "../component/Button";
 
 const Background = styled.div`
   position: absolute;
@@ -35,7 +36,22 @@ const Container = styled.div`
   // max-width, margin 0 auto로 모바일과 맞게 가운데로
   max-width: 480px;
   margin: 0 auto;
-
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  Button {
+    margin-top: 30px;
+    color: ${(props) => props.theme.textColor};
+    border: 1px solid ${(props) => props.theme.textColor};
+    transition: 0.3s ease-in-out;
+    &:hover {
+      color: ${(props) => props.theme.accentColor};
+      border: 1px solid ${(props) => props.theme.accentColor};
+    }
+    &:active {
+      scale: 0.8;
+    }
+  }
   ${Header} {
     height: 8vh;
     margin-top: 20px;
@@ -73,20 +89,13 @@ const Container = styled.div`
       }
     }
   }
+
+  img {
+    max-width: inherit;
+  }
 `;
 
-interface CoinInterface {
-  id: string;
-  name: string;
-  symbol: string;
-  rank: number;
-  is_new: boolean;
-  is_active: boolean;
-  type: string;
-}
-
-function Coins() {
-  const [coins, setCoins] = useState<CoinInterface[]>([]);
+const Main = () => {
   const [loading, setLoading] = useState(true);
   useEffect(() => {
     // ()() 괄호를 두개 붙이면 함수를 바로 실행시킴 ex) (() => console.log("run"))();
@@ -94,49 +103,30 @@ function Coins() {
     (async () => {
       const response = await fetch("https://api.coinpaprika.com/v1/coins");
       const json = await response.json();
-      setCoins(json.slice(0, 10));
       setLoading(false);
     })();
   }, []);
 
+  const onClick = () => {};
   return (
     <Container>
       <Header>
-        <Title>Coins</Title>
+        <Title>서비스</Title>
       </Header>
+      <img src="https://www.advotics.com/wp-content/uploads/2022/02/surat-jalan-01-1-4.png" />
+      <Button onClick={onClick} size="large">
+        주문하기
+      </Button>
       {loading ? (
         <Background>
           <LoadingText>Loading...</LoadingText>
           <img src={Spinner} />
         </Background>
       ) : (
-        <CoinList>
-          {coins.map((coin) => (
-            // &rarr 는 -> 이다.
-            <Coin key={coin.id}>
-              <Link
-                // 아래 코드와 같이 to에 state에 정보를 넘겨서 전달할 수 있다.
-                /**
-                 * 리액트 라우터 6부터는
-                 * Link to={`/${coin.id}`} state={coin.name} 로 따로 적으시면 됩니다!
-                 * 버전이 바뀌면서 state가 to로부터 분리되었네요
-                 */
-                to={{
-                  pathname: `/${coin.id}`,
-                  state: { name: coin.name },
-                }}
-              >
-                <img
-                  src={`https://coinicons-api.vercel.app/api/icon/${coin.symbol.toLowerCase()}`}
-                />
-                {coin.name} &rarr;
-              </Link>
-            </Coin>
-          ))}
-        </CoinList>
+        <CoinList></CoinList>
       )}
     </Container>
   );
-}
+};
 
-export default Coins;
+export default Main;
