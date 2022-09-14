@@ -4,6 +4,7 @@ import Navigation from "./Navigation";
 import Signup from "./routes/Signup";
 import Login from "./routes/Login";
 import Mypage from "./routes/Mypage";
+import MyOrder from "./routes/MyOrder";
 
 function Router() {
   return (
@@ -12,6 +13,9 @@ function Router() {
       <Switch>
         <Route path="/mypage/order">
           <Mypage />
+        </Route>
+        <Route path="/mypage/order/:id">
+          <MyOrder />
         </Route>
         <Route path="/login">
           <Login />

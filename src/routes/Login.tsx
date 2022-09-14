@@ -3,11 +3,13 @@ import React from "react";
 import styled from "styled-components";
 import palette from "../styles/palette";
 // common
+import Button from "../component/Button";
 import Input from "../component/Input";
 // hooks
 import { useHistory } from "react-router-dom";
 import { useState, useEffect } from "react";
-import Button from "../component/Button";
+import { useSelector, useDispatch } from "../store";
+import { userActions } from "../store/userSlice";
 
 const Base = styled.div`
   color: ${(props) => props.theme.textColor};
@@ -109,12 +111,11 @@ const Login: React.FC = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [validated, setValidated] = useState(true);
-  // passwordType state
-  const [passwordType, setPasswordType] = useState({
-    type: "password",
-    visible: false,
-  });
+
   const history = useHistory();
+  const dispatch = useDispatch();
+  const userToken = useSelector((state) => state.user.token);
+  const isLoggedIn = useSelector((state) => state.user.isLoggedIn);
 
   const onChangeEmail = (e: React.ChangeEvent<HTMLInputElement>) => {
     setValidated(true);
@@ -124,47 +125,49 @@ const Login: React.FC = () => {
     setValidated(true);
     setPassword(e.target.value);
   };
+  const validateEmail = (email: string) => {
+    const regExp =
+      /^([\w-]+(?:\.[\w-]+)*)@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$/i;
+    return regExp.test(email);
+  };
+
   // 로그인 버튼
   const login = async (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault();
+    if (password.length < 8 || !validateEmail(email)) {
+      return setValidated(false);
+    }
     try {
-      fetch("http://localhost:3001/user/login", {
+      fetch("https://mycroft-test-api.herokuapp.com/login", {
         method: "post",
         headers: {
           "content-type": "application/json",
         },
-        body: JSON.stringify({ id: email, pwd: password }),
+        body: JSON.stringify({ email: email, password: password }),
       }).then((res) => {
         if (res.status >= 200 && res.status <= 204) {
           // msg -> 서버에서 보내오는 데이터
-          res
-            .json()
-            .then((msg) =>
-              localStorage.setItem("accessToken", JSON.stringify(msg["data"]))
-            );
-          console.log("클라이언트 로그인성공");
-        } else if (res.status == 400) {
-          history.push("/signin");
-          res.json().then((msg) => alert(msg.message));
-        }
-        console.log(res.status);
-        if (res.status >= 400) {
-          console.log("해당 입력이 잘못되었습니다.");
+          res.json().then((msg) => {
+            if (userToken == msg.token) {
+              dispatch(userActions.setLoggedIn());
+              alert("로그인 성공!");
+              return history.push("/");
+            }
+          });
+        } else if (res.status == 401) {
+          return setValidated(false);
         }
       });
     } catch (error) {
       console.log(error);
     }
-    // error 메시지 확인 가능 https://krpeppermint100.medium.com/ts-nodejs-express%EC%9D%98-%EC%9A%94%EC%B2%AD-%EC%9D%91%EB%8B%B5-%EC%97%90%EB%9F%AC-%ED%95%B8%EB%93%A4%EB%A7%81-8943ab7bd13b
-    history.push("/");
   };
-  /*   // 로그인 되어있으면 리다이렉트 
+  //로그인 되어있으면 리다이렉트
   useEffect(() => {
     if (isLoggedIn) {
       history.push("/");
-    } else if (loginModal) {
-      needLogin();
     }
-  }); */
+  });
 
   return (
     <Base>
@@ -177,7 +180,7 @@ const Login: React.FC = () => {
           onChange={onChangeEmail}
         />
         <Input
-          type={passwordType.type}
+          type="password"
           placeholder="비밀번호"
           value={password}
           onChange={onChangePassword}

@@ -4,6 +4,8 @@ import Button from "../component/Button";
 import palette from "../styles/palette";
 import { useState, useEffect, useRef } from "react";
 import { useHistory } from "react-router-dom";
+import { useSelector, useDispatch } from "../store";
+import { userActions } from "../store/userSlice";
 
 const Base = styled.div`
   max-width: 480px;
@@ -37,15 +39,22 @@ const Base = styled.div`
     display: flex;
     align-items: center;
     gap: 1rem;
+    // Input 컴포넌트는 ref 적용이 안되기 때문에 email만 따로 input tag를 적용
     #input-focus {
       height: 2.5rem; // 40px
-      border: 1px solid
-        ${(props) =>
-          props.className == "false" ? palette.red[500] : palette.gray[200]};
       outline: none;
       border-radius: 0.25rem; // 4px
       padding: 0.5rem; // 8px
       width: 100%;
+      :focus {
+        border: 1px solid ${palette.gray[200]};
+      }
+    }
+    .true {
+      border: 1px solid ${palette.gray[200]};
+    }
+    .false {
+      border: 1px solid ${palette.red[500]};
     }
   }
 
@@ -101,9 +110,9 @@ const Signup: React.FC = () => {
     phone: "none",
   });
 
-  /* const isLoggedIn = useSelector((state) => state.user.isLoggedIn); */
   const inputRef = useRef<HTMLInputElement>(null);
-
+  const dispatch = useDispatch();
+  const isLoggedIn = useSelector((state) => state.user.isLoggedIn);
   const history = useHistory();
 
   // 이메일 정규표현식
@@ -169,12 +178,12 @@ const Signup: React.FC = () => {
     const { email, password, phone } = userinfo;
     if (!validateEmail(email)) {
       alert("올바른 이메일 양식인지 확인해주세요!");
-      // ref 적용안됨 확인필요
       inputRef.current?.focus();
       return;
     }
     if (!validatePassword(password)) {
       alert("올바른 비밀번호 양식인지 확인해주세요!");
+      inputRef.current?.focus();
       return;
     }
     if (
@@ -182,10 +191,12 @@ const Signup: React.FC = () => {
       validate.passwordConfirm === "none"
     ) {
       alert("비밀번호 확인과 비밀번호가 일치하지 않습니다.");
+      inputRef.current?.focus();
       return;
     }
     if (!validatePhone(phone)) {
       alert("올바른 전화번호 양식인지 확인해주세요!");
+      inputRef.current?.focus();
       return;
     }
 
@@ -204,8 +215,13 @@ const Signup: React.FC = () => {
         body: JSON.stringify({ regForm }),
       }).then((res) => {
         if (res.status >= 200 && res.status <= 204) {
-          res.json().then((msg) => console.log(msg));
-          history.push("/");
+          res
+            .json()
+            .then((msg) =>
+              dispatch(userActions.setUserInfo({ token: msg.token }))
+            );
+          alert("회원가입이 완료 되었습니다.");
+          return history.push("/");
         } else if (res.status == 400) {
           res.json().then((msg) => alert(msg.message));
         }
@@ -216,7 +232,7 @@ const Signup: React.FC = () => {
   };
   // 로그인시 리다이렉트
   useEffect(() => {
-    /*     isLoggedIn && navigate("/", { replace: true }); */
+    isLoggedIn && history.push("/");
   });
 
   return (

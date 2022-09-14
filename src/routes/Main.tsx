@@ -1,35 +1,12 @@
 import styled from "styled-components";
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
-// 같은 src 폴더에 있어야 사진등이 정상작동함
-import Spinner from "../assets/Spinner.gif";
 import Button from "../component/Button";
+import { useSelector } from "../store";
+import { useHistory } from "react-router-dom";
 
-const Background = styled.div`
-  position: absolute;
-  width: 100vw;
-  height: 100vh;
-  top: 0;
-  left: 0;
-  background: ${(props) => props.theme.bgColor};
-  z-index: 999;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  img {
-    width: 100px;
-  }
-`;
-
-const LoadingText = styled.div`
-  text-align: center;
-`;
-
-const CoinList = styled.div``;
 const Header = styled.header``;
 const Title = styled.h1``;
-const Coin = styled.div``;
 
 const Container = styled.div`
   padding: 0 20px;
@@ -70,6 +47,8 @@ const Container = styled.div`
 
 const Main = () => {
   const [loading, setLoading] = useState(true);
+  const history = useHistory();
+  const isLoggedIn = useSelector((state) => state.user.isLoggedIn);
   useEffect(() => {
     // ()() 괄호를 두개 붙이면 함수를 바로 실행시킴 ex) (() => console.log("run"))();
     // 아래는 api를 fetch하는 코드
@@ -80,7 +59,16 @@ const Main = () => {
     })();
   }, []);
 
-  const onClick = () => {};
+  const onClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault();
+    // 로그인시 isLoggin이 true로 변경되어 token으로 비교하지 않고 isLoggin으로 비교함
+    if (isLoggedIn) {
+      alert("주문성공!");
+    } else {
+      alert("로그인 후 이용 바랍니다");
+      history.push("/login");
+    }
+  };
   return (
     <Container>
       <Header>
@@ -90,14 +78,6 @@ const Main = () => {
       <Button onClick={onClick} size="large">
         주문하기
       </Button>
-      {loading ? (
-        <Background>
-          <LoadingText>Loading...</LoadingText>
-          <img src={Spinner} />
-        </Background>
-      ) : (
-        <CoinList></CoinList>
-      )}
     </Container>
   );
 };

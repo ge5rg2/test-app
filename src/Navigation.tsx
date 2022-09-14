@@ -1,7 +1,9 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import styled from "styled-components";
 import palette from "../src/styles/palette";
+import { useSelector, useDispatch } from "./store";
+import { userActions } from "./store/userSlice";
 
 const Base = styled.div`
   max-width: 480px;
@@ -25,26 +27,46 @@ const Base = styled.div`
 `;
 
 const Navigation: React.FC = () => {
+  const isLoggedIn = useSelector((state) => state.user.isLoggedIn);
+  const dispatch = useDispatch();
+  const history = useHistory();
+  const onLogout = () => {
+    alert("로그아웃 되었습니다.");
+    dispatch(userActions.setLoggedOut());
+    return history.push("/");
+  };
   return (
     <Base>
       <Link to="/">
         <span className="Nav-title">LOGO</span>
       </Link>
-      <div>
-        <Link to="/" className="Nav-item">
-          <h1 className="Nav-signIn">서비스</h1>
-        </Link>
-        <Link to="/sign-up" className="Nav-item">
-          <h1 className="Nav-signIn">회원가입</h1>
-          {/** - 로그인 된 경우 : 마이페이지
+      {/** - 로그인 된 경우 : 마이페이지
     - URL : /mypage/order */}
-        </Link>
-        <Link to="/login" className="Nav-item">
-          <h1 className="Nav-signIn">로그인</h1>
-          {/** - 로그인 된 경우 : 로그아웃
-    - URL : /logout */}
-        </Link>
-      </div>
+      {isLoggedIn ? (
+        <div>
+          <Link to="/" className="Nav-item">
+            <h1 className="Nav-signIn">서비스</h1>
+          </Link>
+          <Link to="/mypage/order" className="Nav-item">
+            <h1 className="Nav-signIn">마이페이지</h1>
+          </Link>
+          <Link to="/logout" className="Nav-item" onClick={onLogout}>
+            <h1 className="Nav-signIn">로그아웃</h1>
+          </Link>
+        </div>
+      ) : (
+        <div>
+          <Link to="/" className="Nav-item">
+            <h1 className="Nav-signIn">서비스</h1>
+          </Link>
+          <Link to="/sign-up" className="Nav-item">
+            <h1 className="Nav-signIn">회원가입</h1>
+          </Link>
+          <Link to="/login" className="Nav-item">
+            <h1 className="Nav-signIn">로그인</h1>
+          </Link>
+        </div>
+      )}
     </Base>
   );
 };
