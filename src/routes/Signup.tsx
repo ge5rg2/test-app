@@ -2,7 +2,7 @@ import styled from "styled-components";
 import Input from "../component/Input";
 import Button from "../component/Button";
 import palette from "../styles/palette";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useHistory } from "react-router-dom";
 
 const Base = styled.div`
@@ -37,6 +37,16 @@ const Base = styled.div`
     display: flex;
     align-items: center;
     gap: 1rem;
+    #input-focus {
+      height: 2.5rem; // 40px
+      border: 1px solid
+        ${(props) =>
+          props.className == "false" ? palette.red[500] : palette.gray[200]};
+      outline: none;
+      border-radius: 0.25rem; // 4px
+      padding: 0.5rem; // 8px
+      width: 100%;
+    }
   }
 
   .signup-input-message {
@@ -92,6 +102,7 @@ const Signup: React.FC = () => {
   });
 
   /* const isLoggedIn = useSelector((state) => state.user.isLoggedIn); */
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const history = useHistory();
 
@@ -155,23 +166,37 @@ const Signup: React.FC = () => {
     };
   // 가입하기 클릭시 발생 함수
   const onClickSubmitButton = async () => {
-    const { email, password } = userinfo;
+    const { email, password, phone } = userinfo;
     if (!validateEmail(email)) {
       alert("올바른 이메일 양식인지 확인해주세요!");
+      // ref 적용안됨 확인필요
+      inputRef.current?.focus();
       return;
     }
     if (!validatePassword(password)) {
       alert("올바른 비밀번호 양식인지 확인해주세요!");
       return;
     }
+    if (
+      validate.passwordConfirm === "fail" ||
+      validate.passwordConfirm === "none"
+    ) {
+      alert("비밀번호 확인과 비밀번호가 일치하지 않습니다.");
+      return;
+    }
+    if (!validatePhone(phone)) {
+      alert("올바른 전화번호 양식인지 확인해주세요!");
+      return;
+    }
 
     const regForm = {
-      username: email,
+      email: email,
       password: password,
+      mobile: phone,
     };
 
     try {
-      fetch("http://localhost:3001/user/register", {
+      fetch("https://mycroft-test-api.herokuapp.com/sign-up", {
         method: "post",
         headers: {
           "content-type": "application/json",
@@ -179,7 +204,7 @@ const Signup: React.FC = () => {
         body: JSON.stringify({ regForm }),
       }).then((res) => {
         if (res.status >= 200 && res.status <= 204) {
-          alert("회원가입 완료!! 10TUT 토큰 지급 !!");
+          res.json().then((msg) => console.log(msg));
           history.push("/");
         } else if (res.status == 400) {
           res.json().then((msg) => alert(msg.message));
@@ -199,11 +224,12 @@ const Signup: React.FC = () => {
       <h1 className="signup-heading">회원가입</h1>
       <p className="signup-input-label">이메일</p>
       <div className="signup-input-wrapper">
-        <Input
+        <input
+          className={validate.email === "fail" ? "false" : "true"}
+          id="input-focus"
+          ref={inputRef}
           type="text"
           onChange={handleInputValue("email")}
-          validated={validate.email === "fail" ? false : true}
-          width="100%"
         />
       </div>
       {validate.email === "pass" ? (

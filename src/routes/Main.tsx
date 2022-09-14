@@ -63,33 +63,6 @@ const Container = styled.div`
     }
   }
 
-  ${CoinList} {
-    ${Coin} {
-      background-color: ${(props) => props.theme.textColor};
-      color: ${(props) => props.theme.bgColor};
-      border-radius: 15px;
-      margin-bottom: 10px;
-      img {
-        width: 35px;
-        height: 35px;
-        margin-right: 10px;
-      }
-      a {
-        padding: 20px;
-        transition: color 0.2s ease-in-out;
-        // 글자 범위 밖에서도 클릭 가능하도록
-        display: flex;
-        align-items: center;
-      }
-      &:hover {
-        // Link가 결국 anchor로 반환되기 때문에 a로 지정한다.
-        a {
-          color: ${(props) => props.theme.accentColor};
-        }
-      }
-    }
-  }
-
   img {
     max-width: inherit;
   }
