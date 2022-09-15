@@ -128,9 +128,9 @@ const Signup: React.FC = () => {
     return regExp.test(password);
   };
 
-  // 연락처 정규표현식 숫자로 10-11자리
+  // 연락처 정규표현식
   const validatePhone = (phone: string) => {
-    const regExp = /^(?=.*[0-9]).{10,11}$/;
+    const regExp = /^\d{2,3}\d{3,4}\d{4}$/;
     return regExp.test(phone);
   };
 
@@ -352,7 +352,7 @@ const Signup: React.FC = () => {
               : "signup-input-error-message"
           }
         >
-          숫자로만 입력해 주세요. ex)01000000000
+          "-"을 제외하고 입력해 주세요 ex)01012345678
         </p>
       )}
       <div className="signup-submit-button-wrapper">
