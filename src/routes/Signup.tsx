@@ -122,13 +122,13 @@ const Signup: React.FC = () => {
     return regExp.test(email);
   };
 
-  // 패스워드 정규표현식
+  // 패스워드 정규표현식 숫자 8-15자리
   const validatePassword = (password: string) => {
     const regExp = /^.{8,15}$/;
     return regExp.test(password);
   };
 
-  // 연락처 정규표현식
+  // 연락처 정규표현식 숫자로 10-11자리
   const validatePhone = (phone: string) => {
     const regExp = /^(?=.*[0-9]).{10,11}$/;
     return regExp.test(phone);
@@ -215,11 +215,12 @@ const Signup: React.FC = () => {
         body: JSON.stringify({ regForm }),
       }).then((res) => {
         if (res.status >= 200 && res.status <= 204) {
-          res
-            .json()
-            .then((msg) =>
-              dispatch(userActions.setUserInfo({ token: msg.token }))
-            );
+          /**
+           * 해당 부분에서 토큰 제외 email, pw, phone만 store에 저장
+           * 서버나 로컬, 쿠키에 저장하는 방식이 아니기 때문에 새로고침시 저장된 내용이 삭제됨.
+           */
+          res.json().then((msg) => console.log(msg));
+          dispatch(userActions.setUserInfo({ email, password, phone }));
           alert("회원가입이 완료 되었습니다.");
           return history.push("/");
         } else if (res.status == 400) {

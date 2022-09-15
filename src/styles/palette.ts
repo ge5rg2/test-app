@@ -1,5 +1,3 @@
-// https://gestalt.netlify.app/color_palette 여기서 자주 쓸 것 같은 색상은 팔레트에 넣어주세요.
-
 const palette = {
   gray: {
     50: "#FAFAFA",

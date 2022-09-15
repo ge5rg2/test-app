@@ -9,7 +9,7 @@ interface BaseProps {
 
 const Base = styled.input<BaseProps>`
   height: 2.5rem; // 40px
-  border: 1px solid ${palette.gray[200]};
+  border: 1px solid ${(props) => props.theme.textColor};
   outline: none;
   border-radius: 0.25rem; // 4px
   padding: 0.5rem; // 8px

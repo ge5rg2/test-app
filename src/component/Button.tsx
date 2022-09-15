@@ -7,12 +7,12 @@ const getButtonDisabled = (disabled?: boolean) => {
   switch (disabled) {
     case true:
       return css`
-        background-color: ${palette.gray[300]};
+        background-color: ${(props) => props.theme.textColor};
         color: ${palette.gray[400]};
         cursor: default;
 
         &:hover {
-          background-color: ${palette.gray[300]};
+          background-color: ${(props) => props.theme.textColor};
         }
       `;
   }
@@ -62,8 +62,6 @@ const Base = styled.button<BaseProps>`
   border: none;
   cursor: pointer;
   transition: all 0.5s;
-
-  // 아이콘이 있는 경우 버튼 사이즈에 따라 패딩이 달라져야함;
 
   ${({ disabled }) => getButtonDisabled(disabled)};
 

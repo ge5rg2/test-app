@@ -32,6 +32,7 @@ const Navigation: React.FC = () => {
   const history = useHistory();
   const onLogout = () => {
     alert("로그아웃 되었습니다.");
+    // 토큰 삭제
     dispatch(userActions.setLoggedOut());
     return history.push("/");
   };
@@ -40,8 +41,6 @@ const Navigation: React.FC = () => {
       <Link to="/">
         <span className="Nav-title">LOGO</span>
       </Link>
-      {/** - 로그인 된 경우 : 마이페이지
-    - URL : /mypage/order */}
       {isLoggedIn ? (
         <div>
           <Link to="/" className="Nav-item">

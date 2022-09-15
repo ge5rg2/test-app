@@ -114,7 +114,8 @@ const Login: React.FC = () => {
 
   const history = useHistory();
   const dispatch = useDispatch();
-  const userToken = useSelector((state) => state.user.token);
+  const userEmail = useSelector((state) => state.user.email);
+  const userPw = useSelector((state) => state.user.password);
   const isLoggedIn = useSelector((state) => state.user.isLoggedIn);
 
   const onChangeEmail = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -146,12 +147,15 @@ const Login: React.FC = () => {
         body: JSON.stringify({ email: email, password: password }),
       }).then((res) => {
         if (res.status >= 200 && res.status <= 204) {
-          // msg -> 서버에서 보내오는 데이터
           res.json().then((msg) => {
-            if (userToken == msg.token) {
+            if (userEmail == email && userPw == password) {
+              dispatch(userActions.setToken(msg.token));
               dispatch(userActions.setLoggedIn());
               alert("로그인 성공!");
               return history.push("/");
+            } else {
+              // 해당 api에서는 양식만 일치하면 바로 토큰을 보내기 때문에 로그인 페이지 입력 양식과 store에 저장된 email, pw가 일치해야만 토큰을 store에 저장
+              return setValidated(false);
             }
           });
         } else if (res.status == 401) {

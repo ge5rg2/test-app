@@ -1,4 +1,5 @@
 import { BrowserRouter, Route, Switch } from "react-router-dom";
+
 import Main from "./routes/Main";
 import Navigation from "./Navigation";
 import Signup from "./routes/Signup";
@@ -10,12 +11,13 @@ function Router() {
   return (
     <BrowserRouter>
       <Navigation />
+      {/** 순서 중요 */}
       <Switch>
+        <Route path="/mypage/order/:itemId">
+          <MyOrder />
+        </Route>
         <Route path="/mypage/order">
           <Mypage />
-        </Route>
-        <Route path="/mypage/order/:id">
-          <MyOrder />
         </Route>
         <Route path="/login">
           <Login />

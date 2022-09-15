@@ -1,7 +1,7 @@
 import styled from "styled-components";
-import { Link } from "react-router-dom";
-import { useEffect, useState } from "react";
 import Button from "../component/Button";
+// hooks
+import { useEffect, useState } from "react";
 import { useSelector } from "../store";
 import { useHistory } from "react-router-dom";
 
@@ -46,23 +46,12 @@ const Container = styled.div`
 `;
 
 const Main = () => {
-  const [loading, setLoading] = useState(true);
   const history = useHistory();
-  const isLoggedIn = useSelector((state) => state.user.isLoggedIn);
-  useEffect(() => {
-    // ()() 괄호를 두개 붙이면 함수를 바로 실행시킴 ex) (() => console.log("run"))();
-    // 아래는 api를 fetch하는 코드
-    (async () => {
-      const response = await fetch("https://api.coinpaprika.com/v1/coins");
-      const json = await response.json();
-      setLoading(false);
-    })();
-  }, []);
+  const userToken = useSelector((state) => state.user.token);
 
   const onClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
-    // 로그인시 isLoggin이 true로 변경되어 token으로 비교하지 않고 isLoggin으로 비교함
-    if (isLoggedIn) {
+    if (userToken !== "") {
       alert("주문성공!");
     } else {
       alert("로그인 후 이용 바랍니다");
